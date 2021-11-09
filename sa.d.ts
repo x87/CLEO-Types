@@ -1,4 +1,4 @@
-// Sanny Builder Library v0.166
+// Sanny Builder Library v0.167
 /// <reference no-default-lib="true"/>
 /// <reference lib="es5" />
 /** Integer value */
@@ -4748,10 +4748,6 @@ interface Sound {
     *
     * https://library.sannybuilder.com/#/sa?q=018C */
     AddOneOffSound(x: float, y: float, z: float, soundId: int): void;
-    /** Stops the sound
-    *
-    * https://library.sannybuilder.com/#/sa?q=018E */
-    remove(): void;
 }
 declare var Sound: Sound
 /** 
