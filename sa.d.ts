@@ -1,4 +1,4 @@
-// Sanny Builder Library v0.167
+// Sanny Builder Library v0.168
 /// <reference no-default-lib="true"/>
 /// <reference lib="es5" />
 /** Integer value */
@@ -3588,12 +3588,12 @@ interface Memory {
     PopFloat(): float;
     /** Reads a value from the game memory
     *
-    * https://library.sannybuilder.com/#/sa?q=0DD8 */
-    Read(address: int, size: int, ib: boolean): int;
+    * https://library.sannybuilder.com/#/sa?q=0A8D */
+    Read(address: int, size: int, vp: boolean): int;
     /** Writes a value to the game memory
     *
-    * https://library.sannybuilder.com/#/sa?q=0DD9 */
-    Write(address: int, value: int, size: int, ib: boolean, vp: boolean): void;
+    * https://library.sannybuilder.com/#/sa?q=0A8C */
+    Write(address: int, size: int, value: int, vp: boolean): void;
 }
 declare var Memory: Memory
 /** 

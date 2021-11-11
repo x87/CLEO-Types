@@ -1,12 +1,11 @@
-// Sanny Builder Library v0.143
+// Sanny Builder Library v0.144
 /// <reference no-default-lib="true"/>
 /// <reference lib="es5" />
 /** Integer value */
 type int = number & { _int: never };
 /** Floating-point value */
 type float = number & { _float: never };
-/** Current host name */
-declare var GAME: "re3" | "reVC" | "gta3" | "vc" | "sa";
+
 /** Pauses the script execution for the specified amount of time in milliseconds */
 declare function wait(delay: int): void;
 /** Displays a black text box with custom text */
@@ -18,7 +17,14 @@ declare function op<T>(op: int, ...args: any[]): T;
 /** Terminates the script and optionally writes a reason to the log file */
 declare function exit(reason?: string): void;
 
-
+/** Current host name */
+declare const GAME: "re3" | "reVC" | "gta3" | "vc" | "sa";
+/** Is player on a mission flag */
+declare var ONMISSION: boolean;
+/** Self-incrementing timer #1 */
+declare var TIMERA: int;
+/** Self-incrementing timer #2 */
+declare var TIMERB: int;
 /** Audio Effects
  * 
  * https://library.sannybuilder.com/#/vc/classes/Audio */
@@ -187,6 +193,10 @@ interface Camera {
     *
     * https://library.sannybuilder.com/#/vc?q=016B */
     GetFadingStatus(): boolean;
+    /** Returns true if the camera is in widescreen mode
+    *
+    * https://library.sannybuilder.com/#/vc?q=0603 */
+    IsInWidescreenMode(): boolean;
     /** Returns true if any part of the radius of the specified point is visible on screen
     *
     * https://library.sannybuilder.com/#/vc?q=00C2 */
@@ -1090,6 +1100,10 @@ declare class Char {
     *
     * https://library.sannybuilder.com/#/vc?q=01C2 */
     markAsNoLongerNeeded(): void;
+    /** Sets the character to play a certain action
+    *
+    * https://library.sannybuilder.com/#/vc?q=0673 */
+    playAnimation(groupId: int, animId: int, blend: float): void;
     /** Removes the characters weapons
     *
     * https://library.sannybuilder.com/#/vc?q=048F */
@@ -1397,6 +1411,14 @@ declare class Char {
     * https://library.sannybuilder.com/#/vc?q=036A */
     warpIntoCar(vehicle: Car): void;
 }
+/** Basic operations to copy and paste data
+ * 
+ * https://library.sannybuilder.com/#/vc/classes/Clipboard */
+interface Clipboard {
+    ReadData(memory: int, size: int): void;
+    WriteData(memory: int, size: int): void;
+}
+declare var Clipboard: Clipboard
 /** Time Manipulation
  * 
  * https://library.sannybuilder.com/#/vc/classes/Clock */
@@ -1536,6 +1558,100 @@ interface Debugger {
     On(): void;
 }
 declare var Debugger: Debugger
+/** Loading DLL files and finding exported functions
+ * 
+ * https://library.sannybuilder.com/#/vc/classes/DynamicLibrary */
+declare class DynamicLibrary {
+    constructor(handle: number);
+    static Load(libraryFileName: string): boolean;
+    free(): void;
+    getProcedure(self: DynamicLibrary): boolean;
+}
+/** Reading and writing files
+ * 
+ * https://library.sannybuilder.com/#/vc/classes/File */
+declare class File {
+    constructor(handle: number);
+    /** Opens the file in the specified mode, sets the condition result to True if the open operation has been successful, or to False otherwise, and writes the file handle to the variable
+    *
+    * https://library.sannybuilder.com/#/vc?q=0A9A */
+    static Open(filePathName: string, mode: int): boolean;
+    /** Closes the file and frees the memory
+    *
+    * https://library.sannybuilder.com/#/vc?q=0A9B */
+    close(): void;
+    /** Gets the file size in bytes
+    *
+    * https://library.sannybuilder.com/#/vc?q=0A9C */
+    getSize(): int;
+    /** Returns true if the end of the specified file has been reached
+    *
+    * https://library.sannybuilder.com/#/vc?q=0AD6 */
+    isEndReached(): boolean;
+    /** Reads the specified number of bytes from the opened file and writes them to the memory region starting from the address of the destination variable
+    *
+    * https://library.sannybuilder.com/#/vc?q=0A9D */
+    read(size: int): int;
+    /** Reads data from the file into the buffer until either the end of buffer is reached, the newline character is read, or the end-of-file is reached, whichever comes first
+    *
+    * https://library.sannybuilder.com/#/vc?q=0AD7 */
+    readString(buffer: string, size: int): boolean;
+    scan(format: string, ...args: number[]): boolean;
+    /** Sets the position of the file to the given offset from the origin
+    *
+    * https://library.sannybuilder.com/#/vc?q=0AD5 */
+    seek(offset: int, origin: int): boolean;
+    /** Copies the specified number of bytes of the memory region starting from the address of the source variable to the file
+    *
+    * https://library.sannybuilder.com/#/vc?q=0A9E */
+    write(size: int, source: int): void;
+    /** Writes a formatted string to the file
+    *
+    * https://library.sannybuilder.com/#/vc?q=0AD9 */
+    writeFormattedString(format: string, ...args: number[]): void;
+    /** Copies data from the source string to the file up to but not including the null character
+    *
+    * https://library.sannybuilder.com/#/vc?q=0AD8 */
+    writeString(source: string): boolean;
+}
+/** File System operations such as copying or deleting files
+ * 
+ * https://library.sannybuilder.com/#/vc/classes/Fs */
+interface Fs {
+    /** Copies an existing directory to a new directory and returns true if the operation is successful
+    *
+    * https://library.sannybuilder.com/#/vc?q=0B05 */
+    CopyDirectory(dirPath: string, newDirPath: string): boolean;
+    /** Copies an existing file to a new file and returns true if the operation is successful
+    *
+    * https://library.sannybuilder.com/#/vc?q=0B04 */
+    CopyFile(fileName: string, newFileName: string): boolean;
+    /** Deletes a directory at the given path and returns true if the operation is successful
+    *
+    * https://library.sannybuilder.com/#/vc?q=0B01 */
+    DeleteDirectory(dirPath: string, recursive: boolean): boolean;
+    /** Deletes a file at the given path and returns true if the operation is successful
+    *
+    * https://library.sannybuilder.com/#/vc?q=0B00 */
+    DeleteFile(fileName: string): boolean;
+    /** Returns true if a file at the given path exists
+    *
+    * https://library.sannybuilder.com/#/vc?q=0AAB */
+    DoesFileExist(path: string): boolean;
+    /** Moves an existing directory and returns true if the operation is successful
+    *
+    * https://library.sannybuilder.com/#/vc?q=0B03 */
+    MoveDirectory(dirPath: string, newDirPath: string): boolean;
+    /** Moves an existing file and returns true if the operation is successful
+    *
+    * https://library.sannybuilder.com/#/vc?q=0B02 */
+    MoveFile(fileName: string, newFileName: string): boolean;
+    /** Sets the current working directory (cwd) to a predefined location with a value of 0 or 1, or to an arbitrary path with a string value
+    *
+    * https://library.sannybuilder.com/#/vc?q=0A99 */
+    SetCurrentDirectory(path: int): void;
+}
+declare var Fs: Fs
 /** Various 2D Effects (Shadows, Lights, Coronas, Particles)
  * 
  * https://library.sannybuilder.com/#/vc/classes/Fx */
@@ -1564,6 +1680,10 @@ interface Fx {
     *
     * https://library.sannybuilder.com/#/vc?q=024F */
     DrawCorona(x: float, y: float, z: float, size: float, coronaType: int, flareType: int, r: int, g: int, b: int): void;
+    /** Draws a shadow in the current frame
+    *
+    * https://library.sannybuilder.com/#/vc?q=016F */
+    DrawShadow(textureType: int, x: float, y: float, z: float, angle: float, size: float, intensity: int, r: int, g: int, b: int): void;
     /** Displays a corona with the lowered draw distance at the specified coordinates
     *
     * https://library.sannybuilder.com/#/vc?q=04D5 */
@@ -1602,6 +1722,10 @@ interface Game {
     *
     * https://library.sannybuilder.com/#/vc?q=03E1 */
     GetCollectablesCollected(): int;
+    /** Returns the version id of the game
+    *
+    * https://library.sannybuilder.com/#/vc?q=05E5 */
+    GetVersion(): int;
     /** Returns true if the player has saved their game
     *
     * https://library.sannybuilder.com/#/vc?q=03D9 */
@@ -1622,6 +1746,10 @@ interface Game {
     *
     * https://library.sannybuilder.com/#/vc?q=0485 */
     IsPcVersion(): boolean;
+    /** Returns true if the game version is vanilla 1.0
+    *
+    * https://library.sannybuilder.com/#/vc?q=0AA9 */
+    IsVersionOriginal(): boolean;
     /** Sets whether all cars receive damage
     *
     * https://library.sannybuilder.com/#/vc?q=03F4 */
@@ -1818,6 +1946,36 @@ interface Hud {
     SwitchWidescreen(state: boolean): void;
 }
 declare var Hud: Hud
+/** Reading and writing .ini files
+ * 
+ * https://library.sannybuilder.com/#/vc/classes/IniFile */
+interface IniFile {
+    /** Reads a floating-point value from the ini file
+    *
+    * https://library.sannybuilder.com/#/vc?q=0AF2 */
+    ReadFloat(path: string, section: string, key: string): float;
+    /** Reads an integer value from the ini file
+    *
+    * https://library.sannybuilder.com/#/vc?q=0AF0 */
+    ReadInt(path: string, section: string, key: string): int;
+    /** Reads a string value from the ini file
+    *
+    * https://library.sannybuilder.com/#/vc?q=0AF4 */
+    ReadString(path: string, section: string, key: string): string;
+    /** Writes the floating-point value to the ini file
+    *
+    * https://library.sannybuilder.com/#/vc?q=0AF3 */
+    WriteFloat(value: float, path: string, section: string, key: string): void;
+    /** Writes the integer value to the ini file
+    *
+    * https://library.sannybuilder.com/#/vc?q=0AF1 */
+    WriteInt(value: int, path: string, section: string, key: string): void;
+    /** Writes the string value to the ini file
+    *
+    * https://library.sannybuilder.com/#/vc?q=0AF5 */
+    WriteString(value: string, path: string, section: string, key: string): void;
+}
+declare var IniFile: IniFile
 /** Rampages Logic
  * 
  * https://library.sannybuilder.com/#/vc/classes/KillFrenzy */
@@ -2205,6 +2363,10 @@ interface Memory {
          * @returns a function accepting arguments and returning a 32-bit unsigned integer value as a result */
         ThiscallU32(address: int, struct: int): (...funcParams: int[]) => int;
     }
+    /** Allocates a chunk of memory of the given size and stores its address to the variable
+    *
+    * https://library.sannybuilder.com/#/vc?q=0AC8 */
+    Allocate(size: int): int;
     /** Calls a function at the address with the given arguments and the calling convention defined by the pop parameter where 0 means 'stdcall' and a value equal to numParams means  'cdecl'
     *
     * https://library.sannybuilder.com/#/vc?q=0AA5 */
@@ -2221,16 +2383,71 @@ interface Memory {
     *
     * https://library.sannybuilder.com/#/vc?q=0AA8 */
     CallMethodReturn(address: int, struct: int, numParams: int, pop: int, ...funcParams: number[]): int;
+    /** Frees the memory allocated with 0AC8
+    *
+    * https://library.sannybuilder.com/#/vc?q=0AC9 */
+    Free(address: int): void;
+    /** Stores the absolute address of a code location marked with the label
+    *
+    * https://library.sannybuilder.com/#/vc?q=0AC6 */
+    GetLabelPointer(_: int): int;
+    /** Gets the address of the object struct in the game memory by its handle
+    *
+    * https://library.sannybuilder.com/#/vc?q=0A98 */
+    GetObjectPointer(object: ScriptObject): int;
+    /** Gets the corresponding handle of the object located at the given address in memory
+    *
+    * https://library.sannybuilder.com/#/vc?q=0AEC */
+    GetObjectRef(address: int): ScriptObject;
+    /** Gets the address of the ped struct in the game memory by its handle
+    *
+    * https://library.sannybuilder.com/#/vc?q=0A96 */
+    GetPedPointer(char: Char): int;
+    /** Gets the corresponding handle of the char located at the given address in memory
+    *
+    * https://library.sannybuilder.com/#/vc?q=0AEA */
+    GetPedRef(address: int): Char;
+    /** Gets the address of a running script which name matches the given string or 0 otherwise
+    *
+    * https://library.sannybuilder.com/#/vc?q=0AAA */
+    GetScriptStructNamed(scriptName: string): int;
+    /** Gets the address of the current script structure in the game memory
+    *
+    * https://library.sannybuilder.com/#/vc?q=0A9F */
+    GetThisScriptStruct(): int;
+    /** Stores the absolute address of the variable
+    *
+    * https://library.sannybuilder.com/#/vc?q=0AC7 */
+    GetVarPointer(_: int): int;
+    /** Gets the address of the vehicle struct in the game memory by its handle
+    *
+    * https://library.sannybuilder.com/#/vc?q=0A97 */
+    GetVehiclePointer(vehicle: Car): int;
+    /** Gets the corresponding handle of the vehicle located at the given address in memory
+    *
+    * https://library.sannybuilder.com/#/vc?q=0AEB */
+    GetVehicleRef(address: int): Car;
+    PopFloat(): float;
     /** Reads a value from the game memory
     *
     * https://library.sannybuilder.com/#/vc?q=0A8D */
     Read(address: int, size: int, vp: boolean): int;
+    SetOffset(address1: int, address2: int, vp: boolean): void;
     /** Writes a value to the game memory
     *
     * https://library.sannybuilder.com/#/vc?q=0A8C */
     Write(address: int, size: int, value: int, vp: boolean): void;
 }
 declare var Memory: Memory
+/** Working with DLL files already loaded in memory
+ * 
+ * https://library.sannybuilder.com/#/vc/classes/MemoryLibrary */
+declare class MemoryLibrary {
+    constructor(handle: number);
+    static Load(address: int): boolean;
+    free(): void;
+    getProcedure(self: MemoryLibrary): boolean;
+}
 /** Pre-recorded script paths
  * 
  * https://library.sannybuilder.com/#/vc/classes/ObjectPath */
@@ -2261,6 +2478,10 @@ declare class ObjectPath {
  * 
  * https://library.sannybuilder.com/#/vc/classes/Pad */
 interface Pad {
+    /** Sets emulate and press pad's button
+    *
+    * https://library.sannybuilder.com/#/vc?q=0602 */
+    EmulateButtonPressWithSensitivity(buttonId: int, sensitivity: int): void;
     /** Returns the controller mode
     *
     * https://library.sannybuilder.com/#/vc?q=0293 */
@@ -2278,6 +2499,10 @@ interface Pad {
     *
     * https://library.sannybuilder.com/#/vc?q=00E1 */
     IsButtonPressed(pad: Pad, buttonId: int): boolean;
+    /** Returns true if the pad's button is pressed with a certain sensitivity
+    *
+    * https://library.sannybuilder.com/#/vc?q=0601 */
+    IsButtonPressedWithSensitivity(buttonId: int, sensitivity: int): boolean;
     /** Returns true if the attack button is being pressed
     *
     * https://library.sannybuilder.com/#/vc?q=0585 */
@@ -2290,6 +2515,10 @@ interface Pad {
     *
     * https://library.sannybuilder.com/#/vc?q=03FD */
     SetDrunkInputDelay(pad: Pad, delay: int): void;
+    /** Returns true if the specified string of letters has been typed on the keyboard
+    *
+    * https://library.sannybuilder.com/#/vc?q=0ADC */
+    TestCheat(input: string): boolean;
 }
 declare var Pad: Pad
 /** Path Configuration And Lookup
@@ -3356,6 +3585,7 @@ declare var Stat: Stat
  * 
  * https://library.sannybuilder.com/#/vc/classes/Streaming */
 interface Streaming {
+    GetNameOfVehicleModel(modelId: int): string;
     /** Returns true if the specified IFP file is loaded
     *
     * https://library.sannybuilder.com/#/vc?q=04EE */
@@ -3444,6 +3674,7 @@ declare var StuckCarCheck: StuckCarCheck
  * 
  * https://library.sannybuilder.com/#/vc/classes/Text */
 interface Text {
+    AddLabel(dynamicKey: string, text: string): void;
     /** Removes the text box from the screen
     *
     * https://library.sannybuilder.com/#/vc?q=03E6 */
@@ -3468,6 +3699,8 @@ interface Text {
     *
     * https://library.sannybuilder.com/#/vc?q=033E */
     Display(offsetLeft: float, offsetTop: float, key: string): void;
+    DisplayFormatted(screenX: float, screenY: float, text: string, _: number[]): void;
+    DisplayString(screenX: float, screenY: float, text: string): void;
     /** Draws text with 2 numbers
     *
     * https://library.sannybuilder.com/#/vc?q=045B */
@@ -3476,6 +3709,7 @@ interface Text {
     *
     * https://library.sannybuilder.com/#/vc?q=045A */
     DisplayWithNumber(offsetLeft: float, offsetTop: float, key: string, num: int): void;
+    GetLabelString(key: string): string;
     /** Makes the game use GXT Entries from the specified GXT Table
     *
     * https://library.sannybuilder.com/#/vc?q=054C */
@@ -3488,10 +3722,17 @@ interface Text {
     *
     * https://library.sannybuilder.com/#/vc?q=00BA */
     PrintBig(key: string, time: int, style: int): void;
+    /** Displays a styled message for the specified time respecting the format of the String entered
+    *
+    * https://library.sannybuilder.com/#/vc?q=0ACF */
+    PrintBigFormatted(text: string, time: int, style: int, ...args: number[]): void;
     /** Displays a low-priority styled message for the specified time
     *
     * https://library.sannybuilder.com/#/vc?q=0217 */
     PrintBigQ(key: string, duration: int, style: int): void;
+    PrintBigString(text: string, time: int, style: int): void;
+    PrintFormatted(text: string, time: int, ...arg: number[]): void;
+    PrintFormattedNow(text: string, time: int, ...arg: number[]): void;
     /** Displays a black text box for a few seconds
     *
     * https://library.sannybuilder.com/#/vc?q=03E5 */
@@ -3500,14 +3741,24 @@ interface Text {
     *
     * https://library.sannybuilder.com/#/vc?q=0512 */
     PrintHelpForever(key: string): void;
+    /** Displays a black text box for a few seconds respecting the format of the String entered
+    *
+    * https://library.sannybuilder.com/#/vc?q=0ACE */
+    PrintHelpFormatted(text: string, ...args: number[]): void;
+    PrintHelpString(text: string): void;
     /** Displays a message positioned on the bottom of the screen for the specified time
     *
     * https://library.sannybuilder.com/#/vc?q=00BC */
     PrintNow(key: string, time: int, flag: int): void;
+    /** Displays the text (provided as a string literal or an address) similarly to 00BB
+    *
+    * https://library.sannybuilder.com/#/vc?q=0ACC */
+    PrintString(text: string, time: int): void;
     /** Displays a styled message in which the first string token ~a~ is substituted with the specified text
     *
     * https://library.sannybuilder.com/#/vc?q=0384 */
     PrintStringInStringNow(templateKey: string, replacementKey: string, duration: int, style: int): void;
+    PrintStringNow(text: string, time: int): void;
     /** Displays a styled message in which the first two ~1~ tokens are substituted with the specified numbers
     *
     * https://library.sannybuilder.com/#/vc?q=036D */
@@ -3540,6 +3791,8 @@ interface Text {
     *
     * https://library.sannybuilder.com/#/vc?q=01E5 */
     PrintWithNumberNow(key: string, num: int, duration: int, flag: int): void;
+    RemoveLabel(dynamicKey: string): void;
+    ScanString(str: string, format: string, ...args: number[]): string;
     /** Gives the text a background (0346)
     *
     * https://library.sannybuilder.com/#/vc?q=0345 */
@@ -3552,6 +3805,10 @@ interface Text {
     *
     * https://library.sannybuilder.com/#/vc?q=0340 */
     SetColor(red: int, green: int, blue: int, alpha: int): void;
+    /** Sets the text draw font
+    *
+    * https://library.sannybuilder.com/#/vc?q=0349 */
+    SetFont(font: int): void;
     /** Sets the text to be drawn justified, which means the text will wrap in order to fill an even rectangle of space
     *
     * https://library.sannybuilder.com/#/vc?q=0341 */
@@ -3572,6 +3829,7 @@ interface Text {
     *
     * https://library.sannybuilder.com/#/vc?q=0343 */
     SetWrapX(width: float): void;
+    StringFormat(format: string, ...args: number[]): string;
     /** Enables text and texture drawing
     *
     * https://library.sannybuilder.com/#/vc?q=03F0 */
@@ -3596,6 +3854,20 @@ interface Txd {
     Remove(): void;
 }
 declare var Txd: Txd
+/** Weapons
+ * 
+ * https://library.sannybuilder.com/#/vc/classes/Weapon */
+interface Weapon {
+    /** Gets the model ID of the weapon according to the weapon type
+    *
+    * https://library.sannybuilder.com/#/vc?q=0604 */
+    GetModel(weaponType: int): int;
+    /** Gets the type of weapon according to the model ID of the weapon
+    *
+    * https://library.sannybuilder.com/#/vc?q=0605 */
+    GetTypeForModel(modelId: int): int;
+}
+declare var Weapon: Weapon
 /** Weather Control
  * 
  * https://library.sannybuilder.com/#/vc/classes/Weather */
@@ -3608,6 +3880,10 @@ interface Weather {
     *
     * https://library.sannybuilder.com/#/vc?q=01B6 */
     ForceNow(type: int): void;
+    /** Gets the current weather ID
+    *
+    * https://library.sannybuilder.com/#/vc?q=0607 */
+    GetCurrent(): int;
     /** Allows the game to continue its usual weather pattern after using 01B5
     *
     * https://library.sannybuilder.com/#/vc?q=01B7 */
@@ -3690,14 +3966,17 @@ interface World {
     *
     * https://library.sannybuilder.com/#/vc?q=02CE */
     GetGroundZFor3DCoord(x: float, y: float, z: float): float;
+    GetRandomCarInSphereNoSaveRecursive(x: float, y: float, z: float, radius: float, findNext: boolean, skipWrecked: boolean): boolean;
     /** Loops through the pool of vehicles to retrieve one that matches the specified model in the specified 2D area
     *
     * https://library.sannybuilder.com/#/vc?q=053E */
     GetRandomCarOfTypeInAreaNoSave(leftBottomX: float, leftBottomY: float, rightTopX: float, rightTopY: float, modelId: int): Car;
+    GetRandomCharInSphereNoSaveRecursive(x: float, y: float, z: float, radius: float, findNext: boolean, skipDead: boolean): boolean;
     /** Gets a random law enforcement ped of any of the specified types in the 2D area
     *
     * https://library.sannybuilder.com/#/vc?q=0469 */
     GetRandomCopInArea(leftBottomX: float, leftBottomY: float, rightTopX: float, rightTopY: float, cop: boolean, swat: boolean, fbi: boolean, army: boolean, vice: boolean): Char;
+    GetRandomObjectInSphereNoSaveRecursive(x: float, y: float, z: float, radius: float, findNext: boolean): boolean;
     /** Checks if glass has been shattered near the specified location
     *
     * https://library.sannybuilder.com/#/vc?q=0523 */
@@ -3750,6 +4029,10 @@ interface World {
     *
     * https://library.sannybuilder.com/#/vc?q=0363 */
     SetVisibilityOfClosestObjectOfType(x: float, y: float, z: float, radius: float, modelId: int, state: boolean): void;
+    /** Creates a vehicle with the model (no pre-loading needed) in front of the player
+    *
+    * https://library.sannybuilder.com/#/vc?q=0ADD */
+    SpawnVehicleByCheating(modelId: int): void;
     /** Swaps a map model with another map model nearest to the center of the search area
     *
     * https://library.sannybuilder.com/#/vc?q=03B6 */

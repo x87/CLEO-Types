@@ -5,8 +5,7 @@
 type int = number & { _int: never };
 /** Floating-point value */
 type float = number & { _float: never };
-/** Current host name */
-declare var GAME: "re3" | "reVC" | "gta3" | "vc" | "sa";
+
 /** Pauses the script execution for the specified amount of time in milliseconds */
 declare function wait(delay: int): void;
 /** Displays a black text box with custom text */
@@ -18,7 +17,14 @@ declare function op<T>(op: int, ...args: any[]): T;
 /** Terminates the script and optionally writes a reason to the log file */
 declare function exit(reason?: string): void;
 
-
+/** Current host name */
+declare const GAME: "re3" | "reVC" | "gta3" | "vc" | "sa";
+/** Is player on a mission flag */
+declare var ONMISSION: boolean;
+/** Self-incrementing timer #1 */
+declare var TIMERA: int;
+/** Self-incrementing timer #2 */
+declare var TIMERB: int;
 /** Audio Effects
  * 
  * https://library.sannybuilder.com/#/gta3/classes/Audio */
