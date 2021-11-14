@@ -1677,9 +1677,9 @@ declare var DrugRun: DrugRun
  * https://library.sannybuilder.com/#/gta3/classes/DynamicLibrary */
 declare class DynamicLibrary {
     constructor(handle: number);
-    static Load(libraryFileName: string): boolean;
+    static Load(libraryFileName: string): DynamicLibrary;
     free(): void;
-    getProcedure(self: DynamicLibrary): boolean;
+    getProcedure(procName: string): int;
 }
 /** Reading and writing files
  * 
@@ -1689,7 +1689,7 @@ declare class File {
     /** Opens the file in the specified mode, sets the condition result to True if the open operation has been successful, or to False otherwise, and writes the file handle to the variable
     *
     * https://library.sannybuilder.com/#/gta3?q=0A9A */
-    static Open(filePathName: string, mode: int): boolean;
+    static Open(filePathName: string, mode: int): File;
     /** Closes the file and frees the memory
     *
     * https://library.sannybuilder.com/#/gta3?q=0A9B */
@@ -1710,7 +1710,7 @@ declare class File {
     *
     * https://library.sannybuilder.com/#/gta3?q=0AD7 */
     readString(buffer: string, size: int): boolean;
-    scan(format: string, ...args: number[]): boolean;
+    scan(format: string, ...args: number[]): string;
     /** Sets the position of the file to the given offset from the origin
     *
     * https://library.sannybuilder.com/#/gta3?q=0AD5 */
@@ -2570,9 +2570,9 @@ declare var Memory: Memory
  * https://library.sannybuilder.com/#/gta3/classes/MemoryLibrary */
 declare class MemoryLibrary {
     constructor(handle: number);
-    static Load(address: int): boolean;
+    static Load(address: int): MemoryLibrary;
     free(): void;
-    getProcedure(self: MemoryLibrary): boolean;
+    getProcedure(procName: string): int;
 }
 /** Big'N'Veiny Mission Logic
  * 
@@ -4137,9 +4137,9 @@ interface World {
     *
     * https://library.sannybuilder.com/#/gta3?q=02CE */
     GetGroundZFor3DCoord(x: float, y: float, z: float): float;
-    GetRandomCarInSphereNoSaveRecursive(x: float, y: float, z: float, radius: float, findNext: boolean, skipWrecked: boolean): boolean;
-    GetRandomCharInSphereNoSaveRecursive(x: float, y: float, z: float, radius: float, findNext: boolean, skipDead: boolean): boolean;
-    GetRandomObjectInSphereNoSaveRecursive(x: float, y: float, z: float, radius: float, findNext: boolean): boolean;
+    GetRandomCarInSphereNoSaveRecursive(x: float, y: float, z: float, radius: float, findNext: boolean, skipWrecked: boolean): Car;
+    GetRandomCharInSphereNoSaveRecursive(x: float, y: float, z: float, radius: float, findNext: boolean, skipDead: boolean): Char;
+    GetRandomObjectInSphereNoSaveRecursive(x: float, y: float, z: float, radius: float, findNext: boolean): ScriptObject;
     /** Returns true if there is anything with the specified properties within the 3D area
     *
     * https://library.sannybuilder.com/#/gta3?q=0339 */

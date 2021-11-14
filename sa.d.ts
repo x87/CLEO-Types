@@ -124,7 +124,7 @@ declare var Audio: Audio
  * https://library.sannybuilder.com/#/sa/classes/AudioStream */
 declare class AudioStream {
     constructor(handle: number);
-    static Load(audioFileName: string): boolean;
+    static Load(audioFileName: string): AudioStream;
     /** Gets the audio stream length in seconds
     *
     * https://library.sannybuilder.com/#/sa?q=0AAF */
@@ -1593,7 +1593,7 @@ declare class Char {
     /** Returns the handle for the searchlight that's targeting the character
     *
     * https://library.sannybuilder.com/#/sa?q=07A9 */
-    isInAnySearchlight(): boolean;
+    isInAnySearchlight(): Searchlight;
     /** Returns true if the specified character is in a train
     *
     * https://library.sannybuilder.com/#/sa?q=09AE */
@@ -2400,16 +2400,19 @@ interface Debugger {
     /** Checks whether the task is skipped (debugging function, the game has a menu page for selecting a task, and you can choose to skip a task. The official version of the game is not enabled), if you skip the task, return to the page where the current task is located, and the ID of the current task. This command is always invalid in the mobile version of SA, returns false, and the returned 2 values are 0
     *
     * https://library.sannybuilder.com/#/sa?q=0A57 */
-    DoMissionSkip(): boolean;
+    DoMissionSkip(): {
+        missionPage: int;
+        missionNum: int;
+    };
     DoStuff(): void;
     /** Returns the ID of the next task (0A57), otherwise -1
     *
     * https://library.sannybuilder.com/#/sa?q=0A58 */
-    GetMissionNum(): boolean;
+    GetMissionNum(): int;
     /** Returns the page where the next task (0A57) is located, otherwise 0
     *
     * https://library.sannybuilder.com/#/sa?q=0A59 */
-    GetMissionPage(): boolean;
+    GetMissionPage(): int;
     IsDebugCameraOn(): boolean;
     /** Makes the current script skip the next 128 bytes of the code
     *
@@ -2439,26 +2442,26 @@ declare class DecisionMaker {
  * https://library.sannybuilder.com/#/sa/classes/DynamicLibrary */
 declare class DynamicLibrary {
     constructor(handle: number);
-    static Load(libraryFileName: string): boolean;
+    static Load(libraryFileName: string): DynamicLibrary;
     free(): void;
-    getProcedure(self: DynamicLibrary): boolean;
+    getProcedure(procName: string): int;
 }
 /** 
  * 
  * https://library.sannybuilder.com/#/sa/classes/File */
 declare class File {
     constructor(handle: number);
-    static FindFirst(filePathName: string, fileName: string): boolean;
+    static FindFirst(filePathName: string, fileName: string): File;
     /** Opens the file in the specified mode, sets the condition result to True if the open operation has been successful, or to False otherwise, and writes the file handle to the variable
     *
     * https://library.sannybuilder.com/#/sa?q=0A9A */
-    static Open(filePathName: string, mode: int): boolean;
+    static Open(filePathName: string, mode: int): File;
     /** Closes the file and frees the memory
     *
     * https://library.sannybuilder.com/#/sa?q=0A9B */
     close(): void;
     findClose(): void;
-    findNext(): boolean;
+    findNext(): string;
     /** Gets the file size in bytes
     *
     * https://library.sannybuilder.com/#/sa?q=0A9C */
@@ -2475,7 +2478,7 @@ declare class File {
     *
     * https://library.sannybuilder.com/#/sa?q=0AD7 */
     readString(buffer: string, size: int): boolean;
-    scan(format: string, ...args: number[]): boolean;
+    scan(format: string, ...args: number[]): string;
     /** Sets the position of the file to the given offset from the origin
     *
     * https://library.sannybuilder.com/#/sa?q=0AD5 */
@@ -4004,7 +4007,7 @@ declare class Player {
     *
     * https://library.sannybuilder.com/#/sa?q=01F5 */
     getChar(): Char;
-    getCharIsTargeting(): boolean;
+    getCharIsTargeting(): Char;
     /** Gets the players current town ID
     *
     * https://library.sannybuilder.com/#/sa?q=0842 */
@@ -5966,7 +5969,7 @@ interface World {
     * https://library.sannybuilder.com/#/sa?q=0702 */
     GetPercentageTaggedInArea(leftBottomX: float, leftBottomY: float, rightTopX: float, rightTopY: float): int;
     GetRandomCarInSphereNoSave(x: float, y: float, z: float, radius: float, model: int): Car;
-    GetRandomCarInSphereNoSaveRecursive(x: float, y: float, z: float, radius: float, findNext: boolean, skipWrecked: boolean): boolean;
+    GetRandomCarInSphereNoSaveRecursive(x: float, y: float, z: float, radius: float, findNext: boolean, skipWrecked: boolean): Car;
     GetRandomCarOfTypeInAngledAreaNoSave(leftBottomX: float, leftBottomY: float, rightTopX: float, rightTopY: float, angle: float, char: Char): Car;
     /** Loops through the pool of vehicles to retrieve one that matches the specified model in the specified 2D area
     *
@@ -5981,12 +5984,12 @@ interface World {
     *
     * https://library.sannybuilder.com/#/sa?q=08E5 */
     GetRandomCharInSphereNoBrain(x: float, y: float, z: float, radius: float): Char;
-    GetRandomCharInSphereNoSaveRecursive(x: float, y: float, z: float, radius: float, findNext: boolean, skipDead: boolean): boolean;
+    GetRandomCharInSphereNoSaveRecursive(x: float, y: float, z: float, radius: float, findNext: boolean, skipDead: boolean): Char;
     /** Loops through the ped pool and returns the first character that is within the specified radius and has the "buys drugs" flag set in peds
     *
     * https://library.sannybuilder.com/#/sa?q=089E */
     GetRandomCharInSphereOnlyDrugsBuyers(x: float, y: float, z: float, radius: float): Char;
-    GetRandomObjectInSphereNoSaveRecursive(x: float, y: float, z: float, radius: float, findNext: boolean): boolean;
+    GetRandomObjectInSphereNoSaveRecursive(x: float, y: float, z: float, radius: float, findNext: boolean): ScriptObject;
     /** Gets the level that the character can hear noise at the specified position
     *
     * https://library.sannybuilder.com/#/sa?q=0855 */
@@ -5994,7 +5997,11 @@ interface World {
     /** Gets the coordinates of the location targeted in the game map
     *
     * https://library.sannybuilder.com/#/sa?q=0AB6 */
-    GetTargetCoords(): boolean;
+    GetTargetCoords(): {
+        x: float;
+        y: float;
+        z: float;
+    };
     /** Gets the height of the water at the specified 2D coordinates
     *
     * https://library.sannybuilder.com/#/sa?q=092E */
@@ -6181,7 +6188,7 @@ declare var Zone: Zone
  * https://library.sannybuilder.com/#/sa/classes/AudioStream3D */
 declare class AudioStream3D extends AudioStream {
     constructor(handle: number);
-    static Load(audioFileName: string): boolean;
+    static Load(audioFileName: string): AudioStream3D;
     setPlayAtCar(handle: Car): void;
     setPlayAtChar(handle: Char): void;
     setPlayAtCoords(x: float, y: float, z: float): void;
