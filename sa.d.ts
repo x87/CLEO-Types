@@ -1,4 +1,4 @@
-// Sanny Builder Library v0.168
+// Sanny Builder Library v0.175
 /// <reference no-default-lib="true"/>
 /// <reference lib="es5" />
 /** Integer value */
@@ -18,7 +18,7 @@ declare function op<T>(op: int, ...args: any[]): T;
 declare function exit(reason?: string): void;
 
 /** Current host name */
-declare const GAME: "re3" | "reVC" | "gta3" | "vc" | "sa";
+declare const GAME: "re3" | "reVC" | "gta3" | "vc" | "sa" | "sa_unreal";
 /** Is player on a mission flag */
 declare var ONMISSION: boolean;
 /** Self-incrementing timer #1 */
@@ -2397,30 +2397,11 @@ declare var Cutscene: Cutscene
  * 
  * https://library.sannybuilder.com/#/sa/classes/Debugger */
 interface Debugger {
-    /** Checks whether the task is skipped (debugging function, the game has a menu page for selecting a task, and you can choose to skip a task. The official version of the game is not enabled), if you skip the task, return to the page where the current task is located, and the ID of the current task. This command is always invalid in the mobile version of SA, returns false, and the returned 2 values are 0
-    *
-    * https://library.sannybuilder.com/#/sa?q=0A57 */
-    DoMissionSkip(): {
-        missionPage: int;
-        missionNum: int;
-    };
-    DoStuff(): void;
-    /** Returns the ID of the next task (0A57), otherwise -1
-    *
-    * https://library.sannybuilder.com/#/sa?q=0A58 */
-    GetMissionNum(): int;
-    /** Returns the page where the next task (0A57) is located, otherwise 0
-    *
-    * https://library.sannybuilder.com/#/sa?q=0A59 */
-    GetMissionPage(): int;
     IsDebugCameraOn(): boolean;
     /** Makes the current script skip the next 128 bytes of the code
     *
     * https://library.sannybuilder.com/#/sa?q=05B6 */
     SaveStringToDebugFile(msg: int): void;
-    WriteLog(_p1: int): void;
-    WriteLogFloat(_p1: float, _p2: float, _p3: float, _p4: int): void;
-    WriteLogInt(_p1: int, _p2: int, _p3: int, _p4: int): void;
 }
 declare var Debugger: Debugger
 /** 
@@ -2619,20 +2600,10 @@ interface Game {
     *
     * https://library.sannybuilder.com/#/sa?q=08E8 */
     AttachAnimsToModel(pedModelId: int, animationFile: string): void;
-    /** Saves the game progress (with setting SaveGameStateType to 1)
-    *
-    * https://library.sannybuilder.com/#/sa?q=0A72 */
-    AutoSave(): void;
-    /** Awards the achievement in the REMASTERED version of SA
-    *
-    * https://library.sannybuilder.com/#/sa?q=0A8E */
-    AwardAchievement(_p1: int): void;
     /** Allows the player to provoke turf wars while a mission is active
     *
     * https://library.sannybuilder.com/#/sa?q=08A3 */
     CanTriggerGangWarWhenOnAMission(state: boolean): void;
-    CheckPointSave(_p1: int): void;
-    CheckpointSaveOddjob(_p1: int): void;
     ClearRelationship(relationshipType: int, ofPedType: int, toPedType: int): void;
     /** Enables turf wars to be provoked in all zones
     *
@@ -2691,11 +2662,6 @@ interface Game {
     *
     * https://library.sannybuilder.com/#/sa?q=059A */
     IsAustralian(): boolean;
-    IsCheckPointResuming(_p1: boolean): boolean;
-    /** Returns true if this is the final build of the game (always true)
-    *
-    * https://library.sannybuilder.com/#/sa?q=0A65 */
-    IsFinalbuild(): boolean;
     /** Returns true if the player provoked a gang war or is defending territory
     *
     * https://library.sannybuilder.com/#/sa?q=0A03 */
@@ -2817,7 +2783,7 @@ interface Game {
     /** Sets the specified enex flag
     *
     * https://library.sannybuilder.com/#/sa?q=098E */
-    SetNamedEntryExitFlag(name: string, bitmask: int, state: boolean): void;
+    SetNamedEntryExitFlag(name: string, entryexitsFlag: int, state: boolean): void;
     /** Enables night vision effects
     *
     * https://library.sannybuilder.com/#/sa?q=08B1 */
@@ -2941,7 +2907,7 @@ declare class Group {
     /** Creates a new group, which multiple characters can be assigned to, allowing control over all of them as a group
     *
     * https://library.sannybuilder.com/#/sa?q=062F */
-    static Create(type: int): Group;
+    static Create(defaultTaskAllocator: int): Group;
     /** Returns true if the handle is a valid group handle
     *
     * https://library.sannybuilder.com/#/sa?q=07FD */
@@ -2962,7 +2928,7 @@ declare class Group {
     *
     * https://library.sannybuilder.com/#/sa?q=06AD */
     setDecisionMaker(maskOrHandle: DecisionMakerGroup): void;
-    setDefaultTaskAllocator(commandId: int): void;
+    setDefaultTaskAllocator(defaultTaskAllocator: int): void;
     /** Sets whether the group members enter a car when the leader does
     *
     * https://library.sannybuilder.com/#/sa?q=0940 */
@@ -2984,16 +2950,6 @@ declare class Group {
     * https://library.sannybuilder.com/#/sa?q=087D */
     setSequence(sequence: Sequence): void;
 }
-/** 
- * 
- * https://library.sannybuilder.com/#/sa/classes/Hid */
-interface Hid {
-    Implements(hidId: int): boolean;
-    IsPressed(hidId: int): boolean;
-    IsReleased(hidId: int): boolean;
-    IsTouchEnabled(): boolean;
-}
-declare var Hid: Hid
 /** 
  * 
  * https://library.sannybuilder.com/#/sa/classes/Hud */
@@ -3683,7 +3639,7 @@ interface Pad {
     IsButtonPressed(pad: Pad, buttonId: int): boolean;
     /** Returns true if the player is pressing a keyboard button with the specified code
     *
-    * https://library.sannybuilder.com/#/sa?q=0AB0 */
+    * https://library.sannybuilder.com/#/sa?q=0C00 */
     IsKeyPressed(keyCode: int): boolean;
     /** Returns true if the player is pressing a key used to skip cutscenes or the game has been minimised
     *
@@ -3952,7 +3908,6 @@ declare class Player {
     *
     * https://library.sannybuilder.com/#/sa?q=0794 */
     static RestoreClothesState(): void;
-    static SetWeaponLockOnTarget(): void;
     /** Stores the players current clothes to later be restored with 0794
     *
     * https://library.sannybuilder.com/#/sa?q=0793 */
@@ -4984,10 +4939,6 @@ interface Streaming {
     *
     * https://library.sannybuilder.com/#/sa?q=081F */
     IsThisModelAPlane(modelId: int): boolean;
-    /** Loads all models immediately, faster than 038B
-    *
-    * https://library.sannybuilder.com/#/sa?q=0A8C */
-    LoadAllModels(): void;
     /** Loads any requested models (0247 or 0353) synchronously
     *
     * https://library.sannybuilder.com/#/sa?q=038B */
@@ -5435,8 +5386,6 @@ interface Text {
     *
     * https://library.sannybuilder.com/#/sa?q=033E */
     Display(offsetLeft: float, offsetTop: float, key: string): void;
-    DisplayClamped(offsetLeft: float, offsetTop: float, key: string, scale: float): void;
-    DisplayMissions(offsetLeft: float, offsetTop: float, key: string): void;
     /** Overrides the text block set by 09BD
     *
     * https://library.sannybuilder.com/#/sa?q=0A44 */
@@ -5453,7 +5402,6 @@ interface Text {
     *
     * https://library.sannybuilder.com/#/sa?q=045A */
     DisplayWithNumber(offsetLeft: float, offsetTop: float, key: string, num: int): void;
-    DisplayWithNumberClamped(offsetLeft: float, offsetTop: float, key: string, number: int, scale: float): void;
     /** Sets whether the styled text stays on the screen when it fades out
     *
     * https://library.sannybuilder.com/#/sa?q=0A2D */
@@ -5506,28 +5454,10 @@ interface Text {
     *
     * https://library.sannybuilder.com/#/sa?q=03E5 */
     PrintHelp(key: string): void;
-    PrintHelpConditional(key: string, type: int): void;
-    PrintHelpConditionalHid(key: string, type: int): void;
-    PrintHelpConditionalHidJoypad(key: string, type: int): void;
-    PrintHelpConditionalHidKeyboard(key: string, type: int): void;
-    PrintHelpConditionalTouch(key: string, type: int): void;
-    PrintHelpConditionalTouchAdapted(key: string, type: int): void;
-    PrintHelpConditionalTouchAnalog(key: string, type: int): void;
-    PrintHelpConditionalTouchClassic(key: string, type: int): void;
     /** Shows a text box which stays on screen until it is removed by another command
     *
     * https://library.sannybuilder.com/#/sa?q=0512 */
     PrintHelpForever(key: string): void;
-    PrintHelpForeverConditional(key: string, type: int): void;
-    PrintHelpForeverConditionalHid(key: string, type: int): void;
-    PrintHelpForeverConditionalHidJoypad(key: string, type: int): void;
-    PrintHelpForeverConditionalHidKeyboard(key: string, type: int): void;
-    PrintHelpForeverConditionalTouch(key: string, type: int): void;
-    PrintHelpForeverConditionalTouchAdapted(key: string, type: int): void;
-    PrintHelpForeverConditionalTouchAnalog(key: string, type: int): void;
-    PrintHelpForeverConditionalTouchClassic(key: string, type: int): void;
-    PrintHelpForeverConditionalTouchDigital(key: string, type: int): void;
-    PrintHelpForeverConditionalTouchFlick(key: string, type: int): void;
     /** Shows a text box with one number
     *
     * https://library.sannybuilder.com/#/sa?q=0513 */
@@ -5778,71 +5708,6 @@ interface Weather {
 declare var Weather: Weather
 /** 
  * 
- * https://library.sannybuilder.com/#/sa/classes/Widget */
-interface Widget {
-    AddButtonFlag(widgetId: int, flag: int): void;
-    AddFlag(widgetId: int, flag: int): void;
-    /** Adds product items and prices to the store menu interface (0A69)
-    *
-    * https://library.sannybuilder.com/#/sa?q=0A6A */
-    AddShopItem(itemName: string, price: int): void;
-    /** Creates a touch-type store menu interface unique to the mobile version of SA
-    *
-    * https://library.sannybuilder.com/#/sa?q=0A69 */
-    CreateShopMenu(menuName: string): void;
-    /** Removes a widget icon from the screen (cannot be restored)
-    *
-    * https://library.sannybuilder.com/#/sa?q=0A6B */
-    Delete(widgetId: int): void;
-    GetPositionScale(widgetId: int): {
-        screenX: float;
-        screenY: float;
-        scaleX: float;
-        scaleY: float;
-    };
-    GetValue(widgetId: int): float;
-    GetValue2(widgetId: int): {
-        _p2: float;
-        _p3: float;
-    };
-    /** Returns true if the button widget icon on the screen is double-tapped
-    *
-    * https://library.sannybuilder.com/#/sa?q=0A53 */
-    IsDoubletapped(widgetId: int): boolean;
-    /** Returns true if the button widget icon on the screen is pressed and released
-    *
-    * https://library.sannybuilder.com/#/sa?q=0A52 */
-    IsReleased(widgetId: int): boolean;
-    /** Returns true if the button widget icon on the screen is swiped
-    *
-    * https://library.sannybuilder.com/#/sa?q=0A54 */
-    IsSwiped(widgetId: int): boolean;
-    /** Returns true if the button widget icon on the screen is swiped left
-    *
-    * https://library.sannybuilder.com/#/sa?q=0A55 */
-    IsSwipedLeft(widgetId: int): boolean;
-    /** Returns true if the button widget icon on the screen is swiped right
-    *
-    * https://library.sannybuilder.com/#/sa?q=0A56 */
-    IsSwipedRight(widgetId: int): boolean;
-    /** Returns true if the button widget icon on the screen is touched
-    *
-    * https://library.sannybuilder.com/#/sa?q=0A51 */
-    IsTouched(widgetId: int): boolean;
-    RemoveButtonFlag(widgetId: int, flag: int): void;
-    RemoveFlag(widgetId: int, flag: int): void;
-    SetEquippedItem(widgetId: int, _p2: int): void;
-    SetInfo(widgetId: int, _p2: int, _p3: int, _p4: int, _p5: int, _p6: int, _p7: int, key: string): void;
-    SetInfo2(widgetId: int, _p2: int, _p3: int, _p4: int, _p5: int, _p6: int, key: string): void;
-    SetSliderRange(widgetId: int, rangeX: float, rangeY: float): void;
-    SetTexture(widgetId: int, textureName: int): void;
-    SetValue(widgetId: int, _p2: float): void;
-    SetValue2(widgetId: int, _p2: float, _p3: float): void;
-    SetValue3(widgetId: int, _p2: float, _p3: float, _p4: float): void;
-}
-declare var Widget: Widget
-/** 
- * 
  * https://library.sannybuilder.com/#/sa/classes/World */
 interface World {
     /** Returns the handle of a random car with the specified model in the specified 2D area, or -1 otherwise
@@ -6069,7 +5934,7 @@ interface World {
     /** This command is like 098E, except it finds the appropriate enex marker via its position instead of its name
     *
     * https://library.sannybuilder.com/#/sa?q=09B4 */
-    SetClosestEntryExitFlag(x: float, y: float, radius: float, bitmask: int, state: boolean): void;
+    SetClosestEntryExitFlag(x: float, y: float, radius: float, entryexitsFlag: int, state: boolean): void;
     SetCreateRandomCops(state: boolean): void;
     /** Sets whether gang members will spawn
     *
@@ -6337,7 +6202,6 @@ declare class MenuGrid extends Menu {
     *
     * https://library.sannybuilder.com/#/sa?q=0964 */
     static Create(header: string, topLeftX: float, topLeftY: float, width: float, numColumns: int, interactive: boolean, background: boolean, alignment: int): MenuGrid;
-    setActiveItemCarMods(carcolor: int): boolean;
 }
 /** 
  * 

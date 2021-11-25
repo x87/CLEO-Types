@@ -1,4 +1,4 @@
-// Sanny Builder Library v0.99
+// Sanny Builder Library v0.100
 /// <reference no-default-lib="true"/>
 /// <reference lib="es5" />
 /** Integer value */
@@ -18,7 +18,7 @@ declare function op<T>(op: int, ...args: any[]): T;
 declare function exit(reason?: string): void;
 
 /** Current host name */
-declare const GAME: "re3" | "reVC" | "gta3" | "vc" | "sa";
+declare const GAME: "re3" | "reVC" | "gta3" | "vc" | "sa" | "sa_unreal";
 /** Is player on a mission flag */
 declare var ONMISSION: boolean;
 /** Self-incrementing timer #1 */
